@@ -6,6 +6,8 @@ const Display = () => {
   const [transactions, settransactions] = useState([]);
   const [customers, setcustomers] = useState([]);
   const [filteredTrans, setfilteredTrans] = useState([]);
+  const [filterName, setfilterName] = useState([]);
+
   let navigate = useNavigate();
 
   async function getData() {
@@ -15,17 +17,23 @@ const Display = () => {
         (response) => (
           settransactions(response.data?.transactions),
           setcustomers(response?.data.customers),
-          setfilteredTrans(response.data?.transactions)
+          setfilteredTrans(response.data?.transactions),
+          setfilterName(response?.data.customers)
         )
       )
       .catch((error) => console.error("Error fetching data:", error));
   }
 
   function filterbyName(name) {
-    let filteredData = customers?.filter((ele) =>
-      ele?.name?.toLowerCase().includes(name.toLowerCase())
-    );
-    setcustomers(filteredData);
+    if (name == 0) {
+      return setfilterName([...customers]);
+    } else {
+      setfilterName([
+        ...customers?.filter((ele) =>
+          ele?.name?.toLowerCase().includes(name.toLowerCase())
+        ),
+      ]);
+    }
   }
 
   function filterAmount(searchValue) {
@@ -92,7 +100,7 @@ const Display = () => {
           <tbody>
             {filteredTrans.length > 0
               ? filteredTrans?.map((ele) =>
-                  customers.map((element) =>
+                  filterName.map((element) =>
                     ele.customer_id === element.id ? (
                       <tr
                         onClick={() => {
